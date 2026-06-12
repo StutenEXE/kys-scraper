@@ -43,4 +43,4 @@ jobs:
             GIN_MODE=release
             EOF
 
-            systemctl restart kys-scraper
+            sudo systemctl restart kys-scraper
