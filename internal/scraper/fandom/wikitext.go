@@ -1,48 +1,107 @@
 package fandom
 
 import (
+	"html"
 	"regexp"
 	"strings"
 )
 
-var infoboxFieldRe = regexp.MustCompile(`\|\s*(\w+)\s*=\s*([^\|}\n]+)`)
+func extractRawPairs(wikitext string) map[string]string {
+	result := make(map[string]string)
+
+	lines := strings.Split(wikitext, "\n")
+	var currentKey string
+	var currentVal strings.Builder
+
+	// flush stores the current key-value pair and resets state.
+	flush := func() {
+		if currentKey != "" {
+			result[currentKey] = strings.TrimSpace(currentVal.String())
+		}
+		currentKey = ""
+		currentVal.Reset()
+	}
+
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if !strings.HasPrefix(trimmed, "|") {
+			// Not a field delimiter: continuation of a multi-line value.
+			if currentKey != "" {
+				currentVal.WriteString("\n")
+				currentVal.WriteString(line)
+			}
+			continue
+		}
+
+		// Line starts with "|": new field, flush the previous one first.
+		flush()
+
+		trimmed = strings.TrimSpace(strings.TrimPrefix(trimmed, "|"))
+
+		eqIdx := strings.Index(trimmed, "=")
+		// No eqIdx means the wikitext is badly formatted, go to next line
+		if eqIdx == -1 {
+			continue
+		}
+
+		key := strings.TrimSpace(trimmed[:eqIdx])
+		val := strings.TrimSpace(trimmed[eqIdx+1:])
+
+		if key == "" {
+			continue
+		}
+
+		currentKey = key
+		currentVal.WriteString(val)
+	}
+	flush()
+
+	return result
+}
 
 // ParseInfobox extracts key/value pairs from a wikitext infobox.
 func ParseInfobox(wikitext string) map[string]string {
 	fields := make(map[string]string)
-	matches := infoboxFieldRe.FindAllStringSubmatch(wikitext, -1)
-	for _, m := range matches {
-		key := strings.TrimSpace(m[1])
-		val := cleanWikitext(strings.TrimSpace(m[2]))
-		fields[key] = val
-	}
+	raw := extractRawPairs(wikitext)
+	fields = sanitizeAll(raw)
 	return fields
 }
 
-// cleanWikitext strips wiki markup like [[links]], {{templates}}, and HTML tags.
-func cleanWikitext(s string) string {
-	// [[Display Text|Link]] or [[Link]] → Display Text or Link
-	s = regexp.MustCompile(`(?s)\[\[(?:[^\]|]*\|)?([^\]|]+)\]\]`).ReplaceAllString(s, "$1")
-	// {{template}} → ""
-	s = regexp.MustCompile(`\{\{[^}]*\}\}`).ReplaceAllString(s, "")
-	// <ref>...</ref> → ""
-	s = regexp.MustCompile(`<ref[^>]*>.*?</ref>`).ReplaceAllString(s, "")
-	// remaining HTML tags
-	s = regexp.MustCompile(`<[^>]+>`).ReplaceAllString(s, "")
+var (
+	// HTML comments: <!-- ... -->
+	reHTMLComment = regexp.MustCompile(`<!--.*?-->`)
+	// Wiki templates: {{ ... }}
+	reTemplate = regexp.MustCompile(`\{\{[^}]*\}\}`)
+	// Wiki links: [[Target|Label]] → Label, or [[Target]] → Target
+	reWikiLink = regexp.MustCompile(`\[\[(?:[^|\]]*\|)?([^\]]+)\]\]`)
+	// HTML tags
+	reHTMLTag = regexp.MustCompile(`<[^>]+>`)
+	// Collapse multiple spaces/newlines
+	reWhitespace = regexp.MustCompile(`\s+`)
+)
 
-	return strings.TrimSpace(s)
+func sanitize(raw string) string {
+	s := raw
+	// Decode HTML entities first (&amp, &lt, ...)
+	s = html.UnescapeString(s)
+	// Remove HTML comments
+	s = reHTMLComment.ReplaceAllString(s, "")
+	// Remove wiki templates {{...}}
+	s = reTemplate.ReplaceAllString(s, "")
+	// Resolve wiki links [[Target|Label]] → Label
+	s = reWikiLink.ReplaceAllString(s, "$1")
+	// Strip HTML tags
+	s = reHTMLTag.ReplaceAllString(s, " ")
+	// Trim and collapse whitespace
+	s = reWhitespace.ReplaceAllString(s, " ")
+	s = strings.TrimSpace(s)
+	return s
 }
 
-// SplitList splits a wikitext list value into individual items.
-// Handles both comma-separated and <br/>-separated lists.
-func SplitList(s string) []string {
-	s = regexp.MustCompile(`<br\s*/?>`).ReplaceAllString(s, ",")
-	parts := strings.Split(s, ",")
-	var out []string
-	for _, p := range parts {
-		if t := strings.TrimSpace(p); t != "" {
-			out = append(out, t)
-		}
+func sanitizeAll(raw map[string]string) map[string]string {
+	result := make(map[string]string, len(raw))
+	for k, v := range raw {
+		result[k] = sanitize(v)
 	}
-	return out
+	return result
 }
