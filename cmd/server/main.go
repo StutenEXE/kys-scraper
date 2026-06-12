@@ -33,9 +33,9 @@ func main() {
 		AllowHeaders: []string{"Content-Type"},
 	}))
 
-	r.POST("/scrape", h.Handle)
+	r.POST("/api/scraper/scrape", h.Handle)
 
-	r.GET("/health", func(c *gin.Context) {
+	r.GET("/api/scraper/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
