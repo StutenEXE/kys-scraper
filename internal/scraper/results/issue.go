@@ -7,13 +7,13 @@ type Issue struct {
 	CoverDate    string
 }
 
-func (c Issue) ResultType() string { return "issue" }
+func (i Issue) ResultType() string { return "issue" }
 
-func (c Issue) ToMap() map[string]string {
-	return map[string]string{
-		"name":         c.Name,
-		"number":       c.Number,
-		"parutionDate": c.ParutionDate,
-		"coverDate":    c.CoverDate,
+func (i Issue) ToMap() map[string]any {
+	return map[string]any{
+		"name":         i.Name,
+		"number":       i.Number,
+		"parutionDate": i.ParutionDate,
+		"coverDate":    i.CoverDate,
 	}
 }

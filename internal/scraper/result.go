@@ -5,14 +5,14 @@ package scraper
 // and knows how to flatten itself into the wire format
 type TypedResult interface {
 	ResultType() string
-	ToMap() map[string]string
+	ToMap() map[string]any
 }
 
 // ScrapeResult is the envelope sent over the wire.
 // Build it only via NewScrapeResult, never construct manually.
 type ScrapeResult struct {
-	ResultType string            `json:"resultType"`
-	Result     map[string]string `json:"result"`
+	ResultType string         `json:"resultType"`
+	Result     map[string]any `json:"result"`
 }
 
 func NewScrapeResult(r TypedResult) ScrapeResult {
