@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 
 	"scrapers/internal/scraper/googlebooks"
 	"scrapers/internal/scraper/results"
@@ -48,7 +49,7 @@ func normalizeISBN(s string) string {
 
 func findBook(info *googlebooks.VolumeInfo) results.Book {
 	return results.Book{
-		Title:       info.Title + " " + info.Subtitle,
+		Title:       strings.TrimSpace(info.Title + " " + info.Subtitle),
 		Authors:     info.Authors,
 		Cover:       info.ImageLinks.Thumbnail,
 		Description: info.Description,

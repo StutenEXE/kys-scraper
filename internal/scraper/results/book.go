@@ -14,6 +14,6 @@ func (b Book) ToMap() map[string]any {
 		"title":       b.Title,
 		"authors":     b.Authors,
 		"cover":       b.Cover,
-		"Description": b.Description,
+		"description": b.Description,
 	}
 }
