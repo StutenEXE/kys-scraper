@@ -160,6 +160,9 @@ func findIssueSerieEndDate(data fandom.FandomData) string {
 	month := data.Fields["EndMonth"]
 	// A number, should always be present
 	year := data.Fields["EndYear"]
+	if month == "" && year == "" {
+		return ""
+	}
 	t := helpers.ParseToDate("1", month, year)
 	return t.Format("2006-01-02T15:04:05")
 }
