@@ -135,6 +135,11 @@ func findIssueCoverDate(data fandom.FandomData) string {
 }
 
 func findIssueSerieName(data fandom.FandomData) string {
+	// Replace "XXXX Vol N" with "XXXX (Volume N)"
+	re := regexp.MustCompile(`(?i)\s+Vol\s+(\d+)$`)
+	if re.MatchString(data.Title) {
+		return re.ReplaceAllString(data.Title, " (Volume $1)")
+	}
 	return data.Title
 }
 

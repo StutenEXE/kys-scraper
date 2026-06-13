@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"os"
 	"scrapers/internal/dispatcher"
@@ -17,7 +17,7 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("env file not loaded: %v", err)
+		fmt.Printf("env file not loaded: %v\n", err)
 	}
 	ginMode := os.Getenv("GIN_MODE")
 	if ginMode == "" {
