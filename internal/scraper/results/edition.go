@@ -14,7 +14,7 @@ func (e Edition) ResultType() string { return "edition" }
 func (e Edition) ToMap() map[string]any {
 	return map[string]any{
 		"isbn13":      e.ISBN13,
-		"isbn10":      e.ISBN13,
+		"isbn10":      e.ISBN10,
 		"publisher":   e.Publisher,
 		"publishDate": e.PublishDate,
 		"pageCount":   e.PageCount,
