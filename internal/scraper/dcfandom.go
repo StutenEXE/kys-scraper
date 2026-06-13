@@ -103,14 +103,24 @@ func findIssueNumber(data fandom.FandomData) string {
 
 func findIssueParutionDate(data fandom.FandomData) string {
 	// Always a number or is not present
-	day := data.Fields["Day"]
+	day := data.Fields["Pubday"]
+	if day == "" {
+		// If no pubday, get day (should always be linked to the parution since cover dates are precise to the month only)
+		day = data.Fields["Day"]
+	}
 	// A number of a string, should always be present, generally 2 months ahead (cover date)
-	month := data.Fields["Month"]
+	month := data.Fields["Pubmonth"]
+	pubMonthPresent := month != ""
+	if !pubMonthPresent {
+		month = data.Fields["Month"]
+	}
 	// A number, should always be present
 	year := data.Fields["Year"]
 	t := helpers.ParseToDate(day, month, year)
-	// Go back 2 months
-	t = t.AddDate(0, -2, 0)
+	if !pubMonthPresent {
+		// Go back 2 months if no specific pubmonth found
+		t = t.AddDate(0, -2, 0)
+	}
 	return t.Format("2006-01-02T15:04:05")
 }
 
@@ -130,7 +140,10 @@ func findIssueSerieName(data fandom.FandomData) string {
 
 func findIssueSerieDescription(data fandom.FandomData) string {
 	splitted := strings.Split(data.Fields["History"], "\n\n")
-	return splitted[0]
+	splitted = strings.Split(splitted[0], "==History==")
+	reLinkApostrophes := regexp.MustCompile(`'{2,}`)
+	text := reLinkApostrophes.ReplaceAllString(splitted[0], "")
+	return strings.TrimSpace(text)
 }
 
 func findIssueSerieStartDate(data fandom.FandomData) string {
