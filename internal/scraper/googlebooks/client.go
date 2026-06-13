@@ -80,8 +80,6 @@ func (c *Client) FetchByISBN(ctx context.Context, isbn string) (*VolumeInfo, err
 		return nil, fmt.Errorf("isbn %s not found", isbn)
 	}
 
-	fmt.Println(data)
-
 	// Exit if no self link exist
 	if data.Items[0].SelfLink == "" {
 		return &data.Items[0].VolumeInfo, nil
@@ -109,8 +107,6 @@ func (c *Client) FetchByISBN(ctx context.Context, isbn string) (*VolumeInfo, err
 		return nil, fmt.Errorf("decoding: %w", err)
 	}
 	defer resp.Body.Close()
-
-	fmt.Println(refinedData)
 
 	return &refinedData.VolumeInfo, nil
 }

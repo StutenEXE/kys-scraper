@@ -30,11 +30,12 @@ docker compose up --build
 
 ## Environment variables
 
-| Variable         | Default | Description                    |
-|------------------|---------|--------------------------------|
-| `PORT`           | `8081`  | Port the server listens on     |
-| `ALLOWED_ORIGIN` | `*`     | CORS allowed origin            |
-| `GIN_MODE`       | `debug` | Set to `release` in production |
+| Variable               | Default | Description                    |
+|------------------------|---------|--------------------------------|
+| `PORT`                 | `8081`  | Port the server listens on     |
+| `ALLOWED_ORIGIN`       | `*`     | CORS allowed origin            |
+| `GIN_MODE`             | `debug` | Set to `release` in production |
+| `GOOGLE_BOOKS_API_KEY` |         | API Key to retreive ISBNs      |
 
 ## Adding a new scraper
 
