@@ -41,6 +41,7 @@ jobs:
             PORT=${{ secrets.PORT }}
             ALLOWED_ORIGIN=${{ secrets.ALLOWED_ORIGIN }}
             GIN_MODE=release
+            GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }}
             EOF
 
             sudo systemctl restart kys-scraper

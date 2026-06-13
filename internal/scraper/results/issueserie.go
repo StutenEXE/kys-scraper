@@ -8,13 +8,13 @@ type IssueSerie struct {
 	Description string
 }
 
-func (c IssueSerie) ResultType() string { return "issueserie" }
+func (is IssueSerie) ResultType() string { return "issueserie" }
 
-func (c IssueSerie) ToMap() map[string]string {
-	return map[string]string{
-		"name":        c.Name,
-		"startDate":   c.StartDate,
-		"endDate":     c.EndDate,
-		"description": c.Description,
+func (is IssueSerie) ToMap() map[string]any {
+	return map[string]any{
+		"name":        is.Name,
+		"startDate":   is.StartDate,
+		"endDate":     is.EndDate,
+		"description": is.Description,
 	}
 }
