@@ -16,7 +16,8 @@ func extractRawPairs(wikitext string) map[string]string {
 	// flush stores the current key-value pair and resets state.
 	flush := func() {
 		if currentKey != "" {
-			result[currentKey] = strings.TrimSpace(currentVal.String())
+			result[currentKey] =
+				strings.TrimSpace(currentVal.String())
 		}
 		currentKey = ""
 		currentVal.Reset()
@@ -78,6 +79,8 @@ var (
 	reHTMLTag = regexp.MustCompile(`<[^>]+>`)
 	// Collapse multiple spaces/newlines
 	reWhitespace = regexp.MustCompile(`\s+`)
+	// Remove remaining open/closes double brackets
+	reDoubleBrackets = regexp.MustCompile(`[{]{2}|[}]{2}`)
 )
 
 func sanitize(raw string) string {
@@ -94,6 +97,8 @@ func sanitize(raw string) string {
 	s = reHTMLTag.ReplaceAllString(s, " ")
 	// Trim and collapse whitespace
 	s = reWhitespace.ReplaceAllString(s, " ")
+	// Remove double brackets
+	s = reDoubleBrackets.ReplaceAllString(s, "")
 	s = strings.TrimSpace(s)
 	return s
 }
