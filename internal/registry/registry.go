@@ -15,5 +15,9 @@ func All() []dispatcher.Registration {
 			Match:   func(host string) bool { return host == "imagecomics.fandom.com" },
 			Factory: func() scraper.Scraper { return scraper.NewImageFandomScraper() },
 		},
+		{
+			Match:   func(host string) bool { return host == "marvel.fandom.com" },
+			Factory: func() scraper.Scraper { return scraper.NewMarvelFandomScraper() },
+		},
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"time"
 
 	"scrapers/internal/scraper/helpers"
 	"scrapers/internal/scraper/results"
@@ -55,7 +56,7 @@ func findIssueName(data FandomData) string {
 	if name == "" {
 		// Build name from issue serie and issue number
 		serie := data.Fields["Title"]
-		number := data.Fields["Issue"]
+		number := findIssueNumber(data)
 		if serie != "" && number != "" {
 			name = fmt.Sprintf("%s #%s", serie, number)
 		}
@@ -64,10 +65,22 @@ func findIssueName(data FandomData) string {
 }
 
 func findIssueNumber(data FandomData) string {
-	return data.Fields["Issue"]
+	number := data.Fields["Issue"]
+	if number == "" {
+		// Ex : Ultimate Spider-Man Vol 1 [1]
+		splitted := strings.Split(data.Title, " ")
+		number = splitted[len(splitted)-1]
+	}
+	return number
 }
 
 func findIssueParutionDate(data FandomData) string {
+	releaseDate := data.Fields["ReleaseDate"]
+	if releaseDate != "" {
+		// Release should be formatted as : September 7, 2000
+		t, _ := time.Parse("January 2, 2006", releaseDate)
+		return t.Format("2006-01-02T15:04:05")
+	}
 	day := data.Fields["Pubday"]
 	if day == "" {
 		day = data.Fields["Day"]
