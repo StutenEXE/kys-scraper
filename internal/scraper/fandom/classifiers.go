@@ -12,31 +12,31 @@ import (
 )
 
 var (
-	issuePattern  = regexp.MustCompile(`/wiki/[^/]+_Vol_\d+_\d+$`)
-	seriesPattern = regexp.MustCompile(`/wiki/[^/]+_Vol_\d+$`)
+	IssuePattern  = regexp.MustCompile(`/wiki/[^/]+_Vol_\d+_\d+$`)
+	SeriesPattern = regexp.MustCompile(`/wiki/[^/]+_Vol_\d+$`)
 )
 
 func IssueClassifier(u *url.URL, data FandomData) (any, bool) {
-	if !issuePattern.MatchString(u.Path) {
+	if !IssuePattern.MatchString(u.Path) {
 		return nil, false
 	}
 	return results.Issue{
-		Name:         findIssueName(data),
-		Number:       findIssueNumber(data),
-		ParutionDate: findIssueParutionDate(data),
-		CoverDate:    findIssueCoverDate(data),
+		Name:         FindIssueName(data),
+		Number:       FindIssueNumber(data),
+		ParutionDate: FindIssueParutionDate(data),
+		CoverDate:    FindIssueCoverDate(data),
 	}, true
 }
 
 func IssueSeriesClassifier(u *url.URL, data FandomData) (any, bool) {
-	if !seriesPattern.MatchString(u.Path) {
+	if !SeriesPattern.MatchString(u.Path) {
 		return nil, false
 	}
 	return results.IssueSerie{
-		Name:        findIssueSerieName(data),
-		Description: findIssueSerieDescription(data),
-		StartDate:   findIssueSerieStartDate(data),
-		EndDate:     findIssueSerieEndDate(data),
+		Name:        FindIssueSerieName(data),
+		Description: FindIssueSerieDescription(data),
+		StartDate:   FindIssueSerieStartDate(data),
+		EndDate:     FindIssueSerieEndDate(data),
 	}, true
 }
 
@@ -51,12 +51,12 @@ func WithDefaultClassifiers(extra ...Classifier) []Classifier {
 	return append(DefaultClassifiers(), extra...)
 }
 
-func findIssueName(data FandomData) string {
+func FindIssueName(data FandomData) string {
 	name := data.Fields["StoryTitle1"]
 	if name == "" {
 		// Build name from issue serie and issue number
 		serie := data.Fields["Title"]
-		number := findIssueNumber(data)
+		number := FindIssueNumber(data)
 		if serie != "" && number != "" {
 			name = fmt.Sprintf("%s #%s", serie, number)
 		}
@@ -64,7 +64,7 @@ func findIssueName(data FandomData) string {
 	return name
 }
 
-func findIssueNumber(data FandomData) string {
+func FindIssueNumber(data FandomData) string {
 	number := data.Fields["Issue"]
 	if number == "" {
 		// Ex : Ultimate Spider-Man Vol 1 [1]
@@ -74,7 +74,7 @@ func findIssueNumber(data FandomData) string {
 	return number
 }
 
-func findIssueParutionDate(data FandomData) string {
+func FindIssueParutionDate(data FandomData) string {
 	releaseDate := data.Fields["ReleaseDate"]
 	if releaseDate != "" {
 		// Release should be formatted as : September 7, 2000
@@ -106,7 +106,7 @@ func findIssueParutionDate(data FandomData) string {
 	return t.Format("2006-01-02T15:04:05")
 }
 
-func findIssueCoverDate(data FandomData) string {
+func FindIssueCoverDate(data FandomData) string {
 	month := data.Fields["Month"]
 	// Sometimes, Month can be written as January 2, and hold the date
 	splittedMonth := strings.Split(month, " ")
@@ -118,7 +118,7 @@ func findIssueCoverDate(data FandomData) string {
 	return t.Format("2006-01-02T15:04:05")
 }
 
-func findIssueSerieName(data FandomData) string {
+func FindIssueSerieName(data FandomData) string {
 	re := regexp.MustCompile(`(?i)\s+Vol\s+(\d+)$`)
 	if re.MatchString(data.Title) {
 		return re.ReplaceAllString(data.Title, " (Volume $1)")
@@ -126,7 +126,7 @@ func findIssueSerieName(data FandomData) string {
 	return data.Title
 }
 
-func findIssueSerieDescription(data FandomData) string {
+func FindIssueSerieDescription(data FandomData) string {
 	history := data.Fields["History"]
 	splitted := strings.Split(history, "\n\n")
 	splitted = strings.Split(splitted[0], "==History==")
@@ -135,14 +135,14 @@ func findIssueSerieDescription(data FandomData) string {
 	return strings.TrimSpace(text)
 }
 
-func findIssueSerieStartDate(data FandomData) string {
+func FindIssueSerieStartDate(data FandomData) string {
 	month := data.Fields["StartMonth"]
 	year := data.Fields["StartYear"]
 	t := helpers.ParseToDate("1", month, year)
 	return t.Format("2006-01-02T15:04:05")
 }
 
-func findIssueSerieEndDate(data FandomData) string {
+func FindIssueSerieEndDate(data FandomData) string {
 	month := data.Fields["EndMonth"]
 	year := data.Fields["EndYear"]
 	if month == "" && year == "" {
