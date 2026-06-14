@@ -1,6 +1,14 @@
 package scraper
 
-import "context"
+import (
+	"context"
+	"net/url"
+	"scrapers/internal/scraper/fandom"
+)
+
+// classifier inspects a URL and loaded document, and returns a result if it
+// recognises the page. Returns (zero, false) to pass to the next classifier.
+type classifier func(u *url.URL, data fandom.FandomData) (TypedResult, bool)
 
 // Scraper is implemented by every domain-specific scraper.
 type Scraper interface {
