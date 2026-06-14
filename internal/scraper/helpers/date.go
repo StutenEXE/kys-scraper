@@ -39,7 +39,6 @@ func ParseToDate(day, month, year string) time.Time {
 			}
 		}
 	}
-	// To have it pass the date and not be in an amiguous midnight state
-	t = t.Add(time.Hour)
+
 	return t
 }
