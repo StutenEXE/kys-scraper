@@ -27,9 +27,9 @@ func imageIssueClassifier(u *url.URL, data fandom.FandomData) (any, bool) {
 }
 
 func imageFindIssueParutionDate(data fandom.FandomData) string {
-	day := data.Fields["Day"]
-	month := data.Fields["Month"]
-	year := data.Fields["Year"]
+	day := data.Wikitext["Day"]
+	month := data.Wikitext["Month"]
+	year := data.Wikitext["Year"]
 	t := helpers.ParseToDate(day, month, year)
 	return t.Format("2006-01-02T15:04:05")
 }

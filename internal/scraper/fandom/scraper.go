@@ -58,11 +58,11 @@ func (s *Scraper) Load(ctx context.Context, rawURL string) (FandomData, error) {
 	if !ok {
 		return FandomData{}, fmt.Errorf("missing wikitext for %s", rawURL)
 	}
+	wtFields := ParseWikitext(wikitext)
 
-	fields := ParseInfobox(wikitext)
 	return FandomData{
-		Title:  page.Parse.Title,
-		Fields: fields,
+		Title:    page.Parse.Title,
+		Wikitext: wtFields,
 	}, nil
 }
 

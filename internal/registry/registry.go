@@ -12,12 +12,16 @@ func All() []dispatcher.Registration {
 			Factory: func() scraper.Scraper { return scraper.NewDCFandomScraper() },
 		},
 		{
+			Match:   func(host string) bool { return host == "marvel.fandom.com" },
+			Factory: func() scraper.Scraper { return scraper.NewMarvelFandomScraper() },
+		},
+		{
 			Match:   func(host string) bool { return host == "imagecomics.fandom.com" },
 			Factory: func() scraper.Scraper { return scraper.NewImageFandomScraper() },
 		},
 		{
-			Match:   func(host string) bool { return host == "marvel.fandom.com" },
-			Factory: func() scraper.Scraper { return scraper.NewMarvelFandomScraper() },
+			Match:   func(host string) bool { return host == "comic-invincible.fandom.com" },
+			Factory: func() scraper.Scraper { return scraper.NewInvincibleFandomScraper() },
 		},
 	}
 }

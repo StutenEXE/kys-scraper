@@ -52,10 +52,10 @@ func WithDefaultClassifiers(extra ...Classifier) []Classifier {
 }
 
 func FindIssueName(data FandomData) string {
-	name := data.Fields["StoryTitle1"]
+	name := data.Wikitext["StoryTitle1"]
 	if name == "" {
 		// Build name from issue serie and issue number
-		serie := data.Fields["Title"]
+		serie := data.Wikitext["Title"]
 		number := FindIssueNumber(data)
 		if serie != "" && number != "" {
 			name = fmt.Sprintf("%s #%s", serie, number)
@@ -65,7 +65,7 @@ func FindIssueName(data FandomData) string {
 }
 
 func FindIssueNumber(data FandomData) string {
-	number := data.Fields["Issue"]
+	number := data.Wikitext["Issue"]
 	if number == "" {
 		// Ex : Ultimate Spider-Man Vol 1 [1]
 		splitted := strings.Split(data.Title, " ")
@@ -75,21 +75,21 @@ func FindIssueNumber(data FandomData) string {
 }
 
 func FindIssueParutionDate(data FandomData) string {
-	releaseDate := data.Fields["ReleaseDate"]
+	releaseDate := data.Wikitext["ReleaseDate"]
 	if releaseDate != "" {
 		// Release should be formatted as : September 7, 2000
 		t, _ := time.Parse("January 2, 2006", releaseDate)
 		return t.Format("2006-01-02T15:04:05")
 	}
-	day := data.Fields["Pubday"]
+	day := data.Wikitext["Pubday"]
 	if day == "" {
-		day = data.Fields["Day"]
+		day = data.Wikitext["Day"]
 	}
 
-	month := data.Fields["Pubmonth"]
+	month := data.Wikitext["Pubmonth"]
 	pubMonthPresent := month != ""
 	if !pubMonthPresent {
-		month = data.Fields["Month"]
+		month = data.Wikitext["Month"]
 		// Sometimes, Month can be written as January 2, and hold the date
 		splittedMonth := strings.Split(month, " ")
 		if len(splittedMonth) > 1 {
@@ -98,7 +98,7 @@ func FindIssueParutionDate(data FandomData) string {
 		}
 	}
 
-	year := data.Fields["Year"]
+	year := data.Wikitext["Year"]
 	t := helpers.ParseToDate(day, month, year)
 	if !pubMonthPresent {
 		t = t.AddDate(0, -2, 0)
@@ -107,13 +107,13 @@ func FindIssueParutionDate(data FandomData) string {
 }
 
 func FindIssueCoverDate(data FandomData) string {
-	month := data.Fields["Month"]
+	month := data.Wikitext["Month"]
 	// Sometimes, Month can be written as January 2, and hold the date
 	splittedMonth := strings.Split(month, " ")
 	if len(splittedMonth) > 1 {
 		month = splittedMonth[0]
 	}
-	year := data.Fields["Year"]
+	year := data.Wikitext["Year"]
 	t := helpers.ParseToDate("1", month, year)
 	return t.Format("2006-01-02T15:04:05")
 }
@@ -127,7 +127,7 @@ func FindIssueSerieName(data FandomData) string {
 }
 
 func FindIssueSerieDescription(data FandomData) string {
-	history := data.Fields["History"]
+	history := data.Wikitext["History"]
 	splitted := strings.Split(history, "\n\n")
 	splitted = strings.Split(splitted[0], "==History==")
 	reLinkApostrophes := regexp.MustCompile(`'{2,}`)
@@ -136,15 +136,15 @@ func FindIssueSerieDescription(data FandomData) string {
 }
 
 func FindIssueSerieStartDate(data FandomData) string {
-	month := data.Fields["StartMonth"]
-	year := data.Fields["StartYear"]
+	month := data.Wikitext["StartMonth"]
+	year := data.Wikitext["StartYear"]
 	t := helpers.ParseToDate("1", month, year)
 	return t.Format("2006-01-02T15:04:05")
 }
 
 func FindIssueSerieEndDate(data FandomData) string {
-	month := data.Fields["EndMonth"]
-	year := data.Fields["EndYear"]
+	month := data.Wikitext["EndMonth"]
+	year := data.Wikitext["EndYear"]
 	if month == "" && year == "" {
 		return ""
 	}

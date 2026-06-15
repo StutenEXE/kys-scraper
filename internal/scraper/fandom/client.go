@@ -23,14 +23,19 @@ func NewClient(wikiHost string) *Client {
 
 type ParseResponse struct {
 	Parse struct {
-		Title    string            `json:"title"`
-		Wikitext map[string]string `json:"wikitext"`
+		Title      string            `json:"title"`
+		Wikitext   map[string]string `json:"wikitext"`
+		Properties []struct {
+			Name string `json:"name"`
+			Data string `json:"*"`
+		} `json:"properties"`
 	} `json:"parse"`
 }
 
 type FandomData struct {
-	Title  string            `json:"title"`
-	Fields map[string]string `json:"fields"`
+	Title     string
+	Wikitext  map[string]string
+	Infoboxes map[string]any
 }
 
 func (c *Client) FetchPage(ctx context.Context, pageTitle string) (*ParseResponse, error) {
