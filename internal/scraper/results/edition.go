@@ -1,5 +1,11 @@
 package results
 
+type EditionDimensions struct {
+	Height    string
+	Width     string
+	Thickness string
+}
+
 type Edition struct {
 	ISBN13      string
 	ISBN10      string
@@ -7,11 +13,7 @@ type Edition struct {
 	PublishDate string
 	PageCount   int
 	Cover       string
-	Dimensions  struct {
-		Height    string
-		Width     string
-		Thickness string
-	}
+	Dimensions  EditionDimensions
 }
 
 func (e Edition) ResultType() string { return "edition" }

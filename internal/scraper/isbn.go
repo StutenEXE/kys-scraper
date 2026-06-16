@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"scrapers/internal/scraper/googlebooks"
@@ -62,11 +63,6 @@ func findEdition(info *googlebooks.VolumeInfo) results.Edition {
 		PublishDate: info.PublishedDate,
 		Cover:       info.ImageLinks.Thumbnail,
 		PageCount:   info.PageCount,
-		Dimensions: struct {
-			Height    string
-			Width     string
-			Thickness string
-		}(info.Dimensions),
 	}
 	for _, id := range info.IndustryIdentifiers {
 		switch id.Type {
@@ -76,5 +72,43 @@ func findEdition(info *googlebooks.VolumeInfo) results.Edition {
 			ed.ISBN13 = id.Identifier
 		}
 	}
+	// For dimensions, we tranform to cm if needed
+	ed.Dimensions = results.EditionDimensions{
+		Height:    parseDimensionToCm(info.Dimensions.Height),
+		Width:     parseDimensionToCm(info.Dimensions.Width),
+		Thickness: parseDimensionToCm(info.Dimensions.Thickness),
+	}
 	return ed
+}
+
+// parseDimensionToCm takes a string like "26.50 cm" or "10.43 in"
+// and returns it normalized to cm, e.g. "26.50".
+func parseDimensionToCm(dim string) string {
+	dim = strings.TrimSpace(dim)
+	if dim == "" {
+		return ""
+	}
+
+	parts := strings.Fields(dim) // splits on whitespace, handles multiple spaces too
+	if len(parts) != 2 {
+		// Unexpected format, return as-is rather than guessing
+		return dim
+	}
+
+	value, err := strconv.ParseFloat(parts[0], 64)
+	if err != nil {
+		return dim
+	}
+
+	switch strings.ToLower(parts[1]) {
+	case "in", "in.", "inch", "inches":
+		value *= 2.54
+	case "cm":
+		// already correct unit, no-op
+	default:
+		// unknown unit, return original untouched
+		return dim
+	}
+
+	return fmt.Sprintf("%.2f", value)
 }
