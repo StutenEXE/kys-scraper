@@ -83,21 +83,21 @@ func findEdition(info *googlebooks.VolumeInfo) results.Edition {
 
 // parseDimensionToCm takes a string like "26.50 cm" or "10.43 in"
 // and returns it normalized to cm, e.g. "26.50".
-func parseDimensionToCm(dim string) string {
+func parseDimensionToCm(dim string) float64 {
 	dim = strings.TrimSpace(dim)
 	if dim == "" {
-		return ""
+		return 0
 	}
 
 	parts := strings.Fields(dim) // splits on whitespace, handles multiple spaces too
 	if len(parts) != 2 {
 		// Unexpected format, return as-is rather than guessing
-		return dim
+		return 0
 	}
 
 	value, err := strconv.ParseFloat(parts[0], 64)
 	if err != nil {
-		return dim
+		return 0
 	}
 
 	switch strings.ToLower(parts[1]) {
@@ -107,8 +107,8 @@ func parseDimensionToCm(dim string) string {
 		// already correct unit, no-op
 	default:
 		// unknown unit, return original untouched
-		return dim
+		return 0
 	}
 
-	return fmt.Sprintf("%.2f", value)
+	return value
 }

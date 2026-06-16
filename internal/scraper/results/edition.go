@@ -1,9 +1,9 @@
 package results
 
 type EditionDimensions struct {
-	Height    string
-	Width     string
-	Thickness string
+	Height    float64
+	Width     float64
+	Thickness float64
 }
 
 type Edition struct {
