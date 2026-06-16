@@ -62,6 +62,11 @@ func findEdition(info *googlebooks.VolumeInfo) results.Edition {
 		PublishDate: info.PublishedDate,
 		Cover:       info.ImageLinks.Thumbnail,
 		PageCount:   info.PageCount,
+		Dimensions: struct {
+			Height    string
+			Width     string
+			Thickness string
+		}(info.Dimensions),
 	}
 	for _, id := range info.IndustryIdentifiers {
 		switch id.Type {

@@ -7,6 +7,11 @@ type Edition struct {
 	PublishDate string
 	PageCount   int
 	Cover       string
+	Dimensions  struct {
+		Height    string
+		Width     string
+		Thickness string
+	}
 }
 
 func (e Edition) ResultType() string { return "edition" }
@@ -19,5 +24,10 @@ func (e Edition) ToMap() map[string]any {
 		"publishDate": e.PublishDate,
 		"pageCount":   e.PageCount,
 		"cover":       e.Cover,
+		"dimensions": map[string]any{
+			"height":    e.Dimensions.Height,
+			"width":     e.Dimensions.Width,
+			"thickness": e.Dimensions.Thickness,
+		},
 	}
 }

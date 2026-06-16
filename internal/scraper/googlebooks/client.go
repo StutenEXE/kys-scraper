@@ -49,6 +49,11 @@ type VolumeInfo struct {
 		Thumbnail      string `json:"thumbnail"`
 		SmallThumbnail string `json:"smallThumbnail"`
 	} `json:"imageLinks"`
+	Dimensions struct {
+		Height    string `json:"height"`
+		Width     string `json:"width"`
+		Thickness string `json:"thickness"`
+	} `json:"dimensions"`
 }
 
 func (c *Client) FetchByISBN(ctx context.Context, isbn string) (*VolumeInfo, error) {
