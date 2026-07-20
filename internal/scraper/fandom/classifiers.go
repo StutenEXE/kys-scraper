@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	IssuePattern  = regexp.MustCompile(`/wiki/[^/]+_Vol_\d+_\d+$`)
-	SeriesPattern = regexp.MustCompile(`/wiki/[^/]+_Vol_\d+$`)
+	IssuePattern  = regexp.MustCompile(`/wiki/.+_Vol_\d+_\d+$`)
+	SeriesPattern = regexp.MustCompile(`/wiki/.+_Vol_\d+$`)
 )
 
 func IssueClassifier(u *url.URL, data FandomData) (any, bool) {
