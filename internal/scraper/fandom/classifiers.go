@@ -98,7 +98,11 @@ func FindIssueParutionDate(data FandomData) string {
 		}
 	}
 
-	year := data.Wikitext["Year"]
+	// Publication year can differ from the cover year (ex : cover Feb 1987, published Oct 1986)
+	year := data.Wikitext["Pubyear"]
+	if year == "" {
+		year = data.Wikitext["Year"]
+	}
 	t := helpers.ParseToDate(day, month, year)
 	if !pubMonthPresent {
 		t = t.AddDate(0, -2, 0)
